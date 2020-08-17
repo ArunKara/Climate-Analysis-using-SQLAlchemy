@@ -1,0 +1,89 @@
+-- Part 2 Climate App --
+
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+#list all the routes
+
+@app.route("/")
+def welcome():
+    """List all available api routes."""
+    return (
+        f"Available Routes:<br/>"
+        f"/api/v1.0/precipitation<br/>"
+        f"/api/v1.0/stations<br/>"
+        f"/api/v1.0/tobs<br/>"
+        f"/api/v1.0/<start><br/>"
+        f"/api/v1.0/<start>/<end>"
+    )
+
+    @app.route("/api/v1.0/precipitation")
+def precipitation():
+    max_stations = dt.date(2017, 8 ,23)
+    year_ago = max_stations - dt.timedelta(days=365)
+
+    past_temp = (session.query(Measurements.date, Measurements.prcp)
+                .filter(Measurements.date <= max_stations)
+                .filter(Measurement.date >= previous_date)
+                .order_by(Measuremenst.date).all())
+    
+    precip = {date: prcp for date, prcp in past_temp}
+    
+    return jsonify(precip)
+
+
+@app.route('/api/v1.0/stations')
+def stations():
+
+    stations_all = session.query(Stations.station).all()
+
+    return jsonify(stations_all)
+
+
+@app.route('/api/v1.0/tobs') 
+def tobs():  
+    max_stations = dt.date(2017, 8 ,23)
+    year_ago = max_stations - dt.timedelta(days=365)
+
+    last_date = (session.query(Measurements.tobs)
+                .filter(Measurements.station == 'USC00519281')
+                .filter(Measurements.date <= max_stations)
+                .filter(Measurements.date >= previous_date)
+                .order_by(Measurements.tobs).all())
+    
+    return jsonify(previous_date)
+
+
+@app.route('/api/v1.0/<start>') 
+def start(start=None):
+
+    #start = Measurement.date <= '2010-01-01'
+    #end = Measurement.date >= '2017-08-23'
+
+    tobs_only = (session.query(Measurements.tobs).filter(Measurements.date.between(start, '2017-08-23')).all())
+    
+    tobs_df = pd.DataFrame(tobs_only)
+
+    tobs_avg = tobs_df["tobs"].mean()
+    tobs_max = tobs_df["tobs"].max()
+    tobs_min = tobs_df["tobs"].min()
+    
+    return jsonify(tobs_avg, tobs_max, tobs_min)
+
+
+@app.route('/api/v1.0/<start>/<end>') 
+def startend(start=None, end=None):
+
+    #start = Measurements.date <= '2010-01-01'
+    #end = Measurements.date >= '2017-08-23'
+
+    tobs_only = (session.query(Measurements.tobs).filter(Measurements.date.between(start, end)).all())
+    
+    tobs_df = pd.DataFrame(tobs_only)
+
+    tobs_avg2 = tobs_df["tobs"].mean()
+    tobs_max2 = tobs_df["tobs"].max()
+    tobs_min2 = tobs_df["tobs"].min()
+    
+    return jsonify(tobs_avg2, tobs_max2, tobs_min2)
