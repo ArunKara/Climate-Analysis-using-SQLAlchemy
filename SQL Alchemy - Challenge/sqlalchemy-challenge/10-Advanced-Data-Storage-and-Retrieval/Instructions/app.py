@@ -1,3 +1,4 @@
+#import dependencies
 import datetime as dt
 import numpy as np
 import pandas as pd
@@ -7,12 +8,18 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
 from flask import Flask, jsonify
 
-#Database Setup
+#Setup Database
+#create engine
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
+#create base
 Base = automap_base()
+#connect base
 Base.prepare(engine, reflect=True)
+#measurements variable
 Measurements = Base.classes.measurement
+#stations variable
 Stations = Base.classes.station
+#create session
 session = Session(engine)
 
 #Setup Flask
@@ -32,7 +39,7 @@ def homepage():
         f"/api/v1.0/temp/start/end"
     )
 
-#my route for precipitation
+#create route for precipitation
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
@@ -47,7 +54,7 @@ def precipitation():
 
 
 
-#my route for stations
+#create route for stations
 @app.route("/api/v1.0/stations")
 def stations():
     results = session.query(Stations.station).all()
@@ -56,7 +63,7 @@ def stations():
     return jsonify(stations=stations)
 
 
-#my route for tobs
+#create route for tobs
 @app.route("/api/v1.0/tobs")
 def temp_monthly():
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
@@ -67,7 +74,7 @@ def temp_monthly():
     return jsonify(temps=temps)
 
 
-#my route for start date and end date
+#create route for start date and end date
 @app.route("/api/v1.0/temp/<start>")
 @app.route("/api/v1.0/temp/<start>/<end>")
 def stats(start=None, end=None):
