@@ -15,12 +15,13 @@ Measurements = Base.classes.measurement
 Stations = Base.classes.station
 session = Session(engine)
 
-#FLASK SETUP
+#Setup Flask
 app = Flask(__name__)
 
 #list all the routes
 @app.route("/")
 
+#define homepage
 def homepage():
     return (
         f"Homepage of the Hawaii Climate Analysis API!<br/>"
@@ -31,7 +32,7 @@ def homepage():
         f"/api/v1.0/temp/start/end"
     )
 
-#route for precipitation
+#my route for precipitation
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
@@ -46,7 +47,7 @@ def precipitation():
 
 
 
-#route for stations
+#my route for stations
 @app.route("/api/v1.0/stations")
 def stations():
     results = session.query(Stations.station).all()
@@ -55,7 +56,7 @@ def stations():
     return jsonify(stations=stations)
 
 
-#route for tobs
+#my route for tobs
 @app.route("/api/v1.0/tobs")
 def temp_monthly():
     prev_year = dt.date(2017, 8, 23) - dt.timedelta(days=365)
@@ -66,7 +67,7 @@ def temp_monthly():
     return jsonify(temps=temps)
 
 
-#route for start
+#my route for start date and end date
 @app.route("/api/v1.0/temp/<start>")
 @app.route("/api/v1.0/temp/<start>/<end>")
 def stats(start=None, end=None):
